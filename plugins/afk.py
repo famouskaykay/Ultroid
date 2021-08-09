@@ -19,12 +19,48 @@
 import asyncio
 from datetime import datetime
 
+from pyrogram import filters
 from pyUltroid.functions.pmpermit_db import *
 from telethon import events
 from telethon.tl.functions.account import GetPrivacyRequest
 from telethon.tl.types import InputPrivacyKeyStatusTimestamp, PrivacyValueAllowAll
 
 from . import *
+
+async def afk_er(client, message):
+    if not message:
+        return
+    if not message.from_user:
+        return
+    if message.from_user.id == client.me.id:
+        return
+    use_r = int(message.from_user.id)
+    if use_r not in afk_sanity_check.keys():
+        afk_sanity_check[use_r] = 1
+    else:
+        afk_sanity_check[use_r] += 1
+    if afk_sanity_check[use_r] == 5:
+        await message.reply_text(
+            "`I Told You 5 Times That My Master Isn't Available, Now I Will Not Reply To You. ;(`"
+        )
+        afk_sanity_check[use_r] += 1
+        return
+    if afk_sanity_check[use_r] > 5:
+        return
+    lol = await check_afk()
+    reason = lol["reason"]
+    if reason == "":
+        reason = None
+    back_alivee = datetime.now()
+    afk_start = lol["time"]
+    afk_end = back_alivee.replace(microsecond=0)
+    total_afk_time = str((afk_end - afk_start))
+    message_to_reply = (
+        f"I Am **[AFK]** Right Now. \n**Last Seen :** `{total_afk_time}`\n**Reason** : `{reason}`"
+        if reason
+        else f"I Am **[AFK]** Right Now. \n**Last Seen :** `{total_afk_time}`"
+    )
+    await message.reply(message_to_reply)
 
 global USER_AFK
 global afk_time
@@ -34,6 +70,8 @@ global afk_start
 global afk_end
 USER_AFK = {}
 afk_time = None
+
+
 last_afk_message = {}
 last_afk_msg = {}
 afk_start = {}
