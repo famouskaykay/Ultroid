@@ -66,7 +66,7 @@ UND = get_string("pmperm_1")
 
 if not Redis("PM_TEXT"):
     UNAPPROVED_MSG = """
-**PMSecurity of {ON}!**
+**the official pm of {ON}!**
 
 {UND}
 
@@ -74,7 +74,7 @@ You have {warn}/{twarn} warnings!"""
 else:
     UNAPPROVED_MSG = (
         """
-**PMSecurity of {ON}!**"""
+**the official pm of  {ON}!**"""
         f"""
 
 {Redis("PM_TEXT")}
